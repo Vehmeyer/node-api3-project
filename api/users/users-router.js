@@ -1,6 +1,6 @@
 const express = require('express');
-const Users = require('./users-model');
-const Posts = require('../posts/posts-model');
+const User = require('./users-model');
+const Post = require('../posts/posts-model');
 const {
   validateUserId,
   validateUser,
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
   // RETURN AN ARRAY WITH ALL THE USERS
-  Users.get(req.query)
+  User.get(req.query)
     .then(users => {
       res.status(200).json(users)
     })
@@ -32,24 +32,28 @@ router.post('/', validateUser, (req, res, next) => {
   // this needs a middleware to check that the request body is valid
   // Insert new user
   // const newUser = {...req.body, name: req.body.name}
-  const newUser = req.body
-  Users.insert(newUser)
-    .then((id) => {
-      return Users.getById(id)
-    })
-    .then(users => {
-      res.json(201).json(req.user)
+  // const newUser = req.body
+  User.insert({ name: req.name })
+    .then(newUser => {
+      res.json(201).json(newUser)
     }) 
     .catch(next)
-
 });
 
-router.put('/:id', validateUserId, validateUser, (req, res) => {
+router.put('/:id', validateUserId, validateUser, (req, res, next ) => {
   console.log("PUT connected")
   // RETURN THE FRESHLY UPDATED USER OBJECT
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
   // Users.update(req.params.id, req.body)
+  User.update(req.params.id, { name: req.name })
+    .then(() => {
+      return User.getById(req.params.id)
+    })
+    .then(user => {
+      res.json(user)
+    })
+    .catch(next)
 });
 
 router.delete('/:id', validateUserId, (req, res) => {
@@ -68,6 +72,14 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
 });
+
+router.use((err, req, res, next) => { //eslint-disable-line
+  res.status(err.status || 500).json({
+    customMessage: err.message,
+    message: err.message, 
+    stack: err.stack
+  })
+})
 
 // do not forget to export the router
 module.exports = router
