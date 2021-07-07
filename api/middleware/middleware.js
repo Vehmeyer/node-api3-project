@@ -1,28 +1,24 @@
-const Users = require('../users/users-model')
+const User = require('../users/users-model')
 
 function logger(req, res, next) {
-  // DO YOUR MAGIC
-  const timeStamp = Date.now()
-  console.log(`${req.method}, ${req.url}`, timeStamp)
+  // const timeStamp = Date.now()
+  const timestamp = new Date().toLocaleString()
+  const method = req.method
+  const url = req.originalUrl 
+  console.log(`[${timestamp}] ${method} ${url}`)
+  // console.log(`${req.method}, ${req.url}`, timestamp)
   next()
 }
 
 async function validateUserId (req, res, next) {
-  // DO YOUR MAGIC
   try {
-    const { id } = req.params
-    // console.log(`the id is ${id}`)
-    const userId = await Users.getById(id)
-    if (userId) {
-      req.user = userId
-      next()
-    } else {
+    const user = await User.getById(req.params.id)
+    if (!user) {
       res.status(404).json({message: "user not found"})
-      // next({
-      //   status: 404,
-      //   message: "user not found"
-      // })
-    }
+    } else {
+      req.user = user
+      next()
+     }
   } catch (err) {
     next(err)
   }

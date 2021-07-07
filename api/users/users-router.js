@@ -40,7 +40,7 @@ router.post('/', validateUser, (req, res, next) => {
       return Users.getById(id)
     })
     .then(users => {
-      res.json(201).json(users)
+      res.json(201).json(req.user)
     }) 
     .catch(next)
 
