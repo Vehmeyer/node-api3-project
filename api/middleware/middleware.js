@@ -25,28 +25,23 @@ async function validateUserId (req, res, next) {
 }
 
 function validateUser(req, res, next) {
-  // DO YOUR MAGIC
-  if (!req.body.name) {
+  const { name } = req.body
+  if (!name || !name.trim()) {
     res.status(400).json({message: "missing required name field"})
-    // next({
-    //   status: 400,
-    //   message: "missing required name field"
-    // }) 
   } else {
+      req.name = name.trim()
       next()
     }
   }
 
 function validatePost(req, res, next) {
-  // DO YOUR MAGIC
-  if (!req.body.text) {
-    next({
-      status: 400,
-      message: "missing required text field"
-    })
+  const { text } = req.body
+  if (!text || !text.trim()) {
+    res.status(400).json({message: "missing required text field"})
   } else {
-    next()
-  }
+      req.text = text.trim()
+      next()
+    }
 }
 
 const errorHandling = (err, res, next) => { // eslint-disable-line
