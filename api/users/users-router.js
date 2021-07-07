@@ -16,18 +16,17 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
   // RETURN AN ARRAY WITH ALL THE USERS
-  console.log("GET connected")
   Users.get(req.query)
     .then(users => {
       res.status(200).json(users)
     })
     .catch(next)
-
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', validateUserId, (req, res, next) => {
   // RETURN THE USER OBJECT
   // this needs a middleware to verify user id
+  res.json(req.user)
 });
 
 router.post('/', (req, res) => {

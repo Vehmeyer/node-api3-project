@@ -16,11 +16,11 @@ async function validateUserId (req, res, next) {
       req.user = userId
       next()
     } else {
-      next({
-        status: 404,
-        message: "user not found"
-      })
-
+      res.status(404).json({message: "user not found"})
+      // next({
+      //   status: 404,
+      //   message: "user not found"
+      // })
     }
   } catch (err) {
     next(err)
